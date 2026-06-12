@@ -49,3 +49,6 @@ test-results/
 
 # Local runtime data (download counter, etc.)
 services/api/data/
+
+# Local verification inputs (not part of the app)
+.local/

@@ -20,6 +20,24 @@ Ingest batches, browse snapshots, run **time-travel queries with [DuckDB](https:
 
 Data engineers and ML teams who want schema evolution, time-travel, and snapshot rollback over feature data — without standing up or operating a cloud data warehouse.
 
+## What it looks like
+
+**Dashboard** — Iceberg metrics (rows, snapshots, warehouse size on B2, write amplification), a rows-over-snapshots growth chart, and a recent-activity log.
+
+![Dashboard with Iceberg metrics, growth chart, and recent activity](docs/images/dashboard.png)
+
+**Ingest** — append a synthetic batch or a staged `raw/` file (each commits a snapshot), and evolve the schema by adding a nullable `feature_c` column.
+
+![Ingest page with synthetic batch, raw file, and schema-evolution panels](docs/images/ingest.png)
+
+**Tables** — the warehouse-scoped explorer: snapshot history with per-commit row deltas, time-travel, and one-click rollback, plus schema-version and warehouse-files sub-views.
+
+![Tables page showing Iceberg snapshot history with rollback actions](docs/images/tables.png)
+
+**Query** — time-travel to current/a snapshot/an as-of timestamp; PyIceberg prunes files, DuckDB runs your SQL in-memory, and scan stats show how many files were read from B2.
+
+![Query page with SQL editor, scan stats, and a feature-rows result table](docs/images/query.png)
+
 ## How it works
 
 ```
@@ -42,24 +60,6 @@ Ingest (synthetic batch or raw/ file)
 - **Commit atomicity is in SQLite, not S3.** The Iceberg catalog is a `SqlCatalog` backed by a tiny local SQLite DB that holds only the pointer to each table's latest `metadata.json`. Because commits are serialized through SQLite, B2's lack of conditional-PUT is a non-issue — **no `AWS_S3_ALLOW_UNSAFE_RENAME` hack needed**. Single-writer by design.
 - **The warehouse is the bucket.** All table data, manifests, and metadata live under `warehouse/` on B2 via PyIceberg's PyArrow S3 FileIO. There is no warehouse server.
 - **DuckDB never touches B2.** It runs purely in-memory over the Arrow table PyIceberg already read, so all B2 I/O stays in two places (boto3 + PyIceberg).
-
-## What it looks like
-
-**Dashboard** — Iceberg metrics (rows, snapshots, warehouse size on B2, write amplification), a rows-over-snapshots growth chart, and a recent-activity log.
-
-![Dashboard with Iceberg metrics, growth chart, and recent activity](docs/images/dashboard.png)
-
-**Ingest** — append a synthetic batch or a staged `raw/` file (each commits a snapshot), and evolve the schema by adding a nullable `feature_c` column.
-
-![Ingest page with synthetic batch, raw file, and schema-evolution panels](docs/images/ingest.png)
-
-**Tables** — the warehouse-scoped explorer: snapshot history with per-commit row deltas, time-travel, and one-click rollback, plus schema-version and warehouse-files sub-views.
-
-![Tables page showing Iceberg snapshot history with rollback actions](docs/images/tables.png)
-
-**Query** — time-travel to current/a snapshot/an as-of timestamp; PyIceberg prunes files, DuckDB runs your SQL in-memory, and scan stats show how many files were read from B2.
-
-![Query page with SQL editor, scan stats, and a feature-rows result table](docs/images/query.png)
 
 ## Quick Start
 
