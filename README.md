@@ -43,6 +43,24 @@ Ingest (synthetic batch or raw/ file)
 - **The warehouse is the bucket.** All table data, manifests, and metadata live under `warehouse/` on B2 via PyIceberg's PyArrow S3 FileIO. There is no warehouse server.
 - **DuckDB never touches B2.** It runs purely in-memory over the Arrow table PyIceberg already read, so all B2 I/O stays in two places (boto3 + PyIceberg).
 
+## What it looks like
+
+**Dashboard** — Iceberg metrics (rows, snapshots, warehouse size on B2, write amplification), a rows-over-snapshots growth chart, and a recent-activity log.
+
+![Dashboard with Iceberg metrics, growth chart, and recent activity](docs/images/dashboard.png)
+
+**Ingest** — append a synthetic batch or a staged `raw/` file (each commits a snapshot), and evolve the schema by adding a nullable `feature_c` column.
+
+![Ingest page with synthetic batch, raw file, and schema-evolution panels](docs/images/ingest.png)
+
+**Tables** — the warehouse-scoped explorer: snapshot history with per-commit row deltas, time-travel, and one-click rollback, plus schema-version and warehouse-files sub-views.
+
+![Tables page showing Iceberg snapshot history with rollback actions](docs/images/tables.png)
+
+**Query** — time-travel to current/a snapshot/an as-of timestamp; PyIceberg prunes files, DuckDB runs your SQL in-memory, and scan stats show how many files were read from B2.
+
+![Query page with SQL editor, scan stats, and a feature-rows result table](docs/images/query.png)
+
 ## Quick Start
 
 You need: Node.js >= 20, pnpm >= 9, Python >= 3.11, and a free **[Backblaze B2 account](https://www.backblaze.com/sign-up/ai-cloud-storage?utm_source=github&utm_medium=referral&utm_campaign=ai_artifacts&utm_content=b2ai-iceberg-feature-store)**. No other API keys.
