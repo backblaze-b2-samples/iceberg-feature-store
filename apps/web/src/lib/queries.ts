@@ -16,6 +16,7 @@ import {
   getUploadActivity,
   getWarehouseFiles,
   ingestBatch,
+  ingestRawFile,
   rollbackSnapshot,
 } from "@/lib/api-client";
 import type {
@@ -152,6 +153,14 @@ export function useIngestBatch() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (rows?: number | null) => ingestBatch(rows),
+    onSuccess: () => invalidateTableState(qc),
+  });
+}
+
+export function useIngestRawFile() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (key: string) => ingestRawFile(key),
     onSuccess: () => invalidateTableState(qc),
   });
 }

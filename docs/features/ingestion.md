@@ -12,7 +12,7 @@ Append a batch of feature rows to the Iceberg table (committing a new snapshot t
 - `services/api/app/service/ingest.py` — `ingest_synthetic()`, `ingest_raw_file()`, `evolve()`
 - `services/api/app/repo/iceberg_schema.py` — `synthetic_batch()`, `parse_file_to_arrow()`, `arrow_schema()`
 - `services/api/app/repo/iceberg_catalog.py` — `append_arrow()` (create-with-data on first append), `evolve_schema()`
-- `apps/web/src/lib/queries.ts` — `useIngestBatch()`, `useEvolveSchema()`
+- `apps/web/src/lib/queries.ts` — `useIngestBatch()`, `useIngestRawFile()`, `useEvolveSchema()`
 
 ## Canonical Files
 - Ingest service: `services/api/app/service/ingest.py`
@@ -40,9 +40,10 @@ Append a batch of feature rows to the Iceberg table (committing a new snapshot t
 - Evolve when `feature_c` already present → returns `already_present: true` (idempotent, no-op)
 
 ## UX States
-- Empty/idle: row-count input + Append button; Evolve button
+- Empty/idle: row-count input + Append button; raw-file picker (lists objects under `raw/`) + Ingest button; Evolve button
+- Raw-file picker is disabled with an Upload-page hint when no `raw/` objects exist
 - Loading: spinner on the active button
-- Success/Error: toast with snapshot id + totals, or the API error message
+- Success/Error: toast with snapshot id + totals (raw-file toast names the source key), or the API error message
 
 ## Verification
 - Test files: `services/api/tests/test_ingest_query.py` (synthetic batch schema, file parsing)

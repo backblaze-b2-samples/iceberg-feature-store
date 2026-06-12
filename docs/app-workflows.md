@@ -9,7 +9,7 @@ User journeys inside the application.
 - Enters a row count and clicks **Append batch** — a synthetic feature batch is generated and committed as a new Iceberg snapshot on B2 (the table is created on the first append)
 - Toast confirms the snapshot id and running totals
 - Optionally clicks **Add feature_c column** — Iceberg schema evolution; new rows ingested afterward carry the column, existing snapshots are untouched
-- Raw-file ingest: a CSV/JSON/Parquet staged under `raw/` (via Upload) can be parsed into the table via `POST /ingest/raw`
+- Raw-file ingest: picks a CSV/JSON/Parquet staged under `raw/` (via Upload) from the **Ingest a raw file** card and clicks **Ingest file** — it's parsed into the feature schema and committed as a new snapshot
 - See: [Batch Ingestion & Schema Evolution](features/ingestion.md)
 
 ## Browse Snapshots and Time-Travel / Roll Back
@@ -25,7 +25,7 @@ User journeys inside the application.
 ## Time-Travel Query and Export
 
 - User navigates to `/query`
-- Picks the scope: **Current**, a specific snapshot, or (via the API) an as-of timestamp; optionally adds a row filter (Iceberg expression, e.g. `label = 1`)
+- Picks the scope from **Resolve at**: **Current**, **As-of timestamp…** (a `datetime-local` picker resolving to the latest snapshot at or before it), or a specific snapshot; optionally adds a row filter (Iceberg expression, e.g. `label = 1`)
 - Writes SQL over the scanned Arrow table (aliased `t`) and clicks **Run query**
 - Results show with scan stats — files scanned vs. total (file pruning) and rows read
 - Clicks **Export slice to B2** to write the (filtered/projected) result as a new Parquet under `exports/`

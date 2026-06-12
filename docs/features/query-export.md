@@ -42,10 +42,11 @@ Run a time-travel query against the feature table — PyIceberg prunes files and
 - No table yet → scan returns an empty Arrow table and zeroed stats
 
 ## UX States
-- Idle: snapshot select + row filter + SQL textarea + Run / Export buttons
+- Idle: "Resolve at" select (Current / As-of timestamp… / a specific snapshot) + row filter + SQL textarea + Run / Export buttons
+- Picking "As-of timestamp…" reveals a `datetime-local` input; the browser-local value is normalized to UTC (`toISOString()`) before the request, and the API resolves it to the latest snapshot at or before it
 - Loading: spinner on the active button
 - Results: scan-stats summary + a scrollable results table
-- Error: toast with the API message
+- Error: toast with the API message (e.g. "Pick an as-of timestamp" if the mode is selected but empty)
 
 ## Verification
 - Test files: `services/api/tests/test_ingest_query.py` (DuckDB run_sql, datetime serialization, Parquet round-trip)
