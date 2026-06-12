@@ -176,7 +176,7 @@ export function useEvolveSchema() {
 export function useRollback() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (snapshotId: number) => rollbackSnapshot(snapshotId),
+    mutationFn: (snapshotId: string) => rollbackSnapshot(snapshotId),
     onSuccess: () => invalidateTableState(qc),
   });
 }

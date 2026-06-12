@@ -25,6 +25,7 @@ Browse the Iceberg table's snapshot history and schema versions, roll the table 
 ## Outputs
 - `TableInfo`, `SnapshotInfo[]` (newest first), `SchemaVersion[]`, `FileMetadata[]` (warehouse objects)
 - Rollback returns the updated `TableInfo`; side effect: a `rollback` ops-log entry
+- **Snapshot ids cross the API as strings.** Iceberg snapshot ids are 64-bit; a JS `Number` is float64 and rounds anything above 2**53, so the `SnapshotId` field type (`services/api/app/types/fields.py`) serializes them as strings and coerces them back to int on input. The frontend (`SnapshotInfo`, `TableInfo`, `QueryRequest`, …) types them as `string`.
 
 ## Flow
 - Tables view loads `TableInfo`; if the table doesn't exist yet, shows a "no table" empty state
@@ -35,7 +36,7 @@ Browse the Iceberg table's snapshot history and schema versions, roll the table 
 
 ## Edge Cases
 - No table yet → empty state pointing to Ingest
-- Rollback to a snapshot not in history → 400
+- Rollback to a snapshot not in history → 400. (Before snapshot ids were carried as strings, *every* large id round-tripped through JS as a rounded float and hit this path — "Snapshot … is not in this table's history" even for a valid snapshot.)
 - Rollback leaves superseded data files on B2 until expiration (orphan files; see RELIABILITY.md)
 - Empty warehouse → empty state
 
@@ -46,7 +47,7 @@ Browse the Iceberg table's snapshot history and schema versions, roll the table 
 - Confirm: AlertDialog before rollback
 
 ## Verification
-- Test files: live B2 needed for snapshot history; `services/api/tests/test_structure.py` for boundaries
+- Test files: `services/api/tests/test_snapshot_id.py` (64-bit id string round-trip — no B2 needed); live B2 needed for snapshot history; `services/api/tests/test_structure.py` for boundaries
 - Required cases: snapshot list after appends, rollback changes current pointer, time-travel reads the old schema (verified manually against B2 during the build)
 - Quick verify command: `pnpm test:api`
 - Full verify command: `pnpm lint && pnpm lint:api && pnpm test:api && pnpm check:structure`

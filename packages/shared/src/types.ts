@@ -79,15 +79,17 @@ export interface TableInfo {
   current_schema_id: number;
   columns: ColumnInfo[];
   snapshot_count: number;
-  current_snapshot_id: number | null;
+  // Iceberg snapshot ids are 64-bit; carried as strings so JS Number precision
+  // (float64, exact only to 2**53) never corrupts them on the JSON round-trip.
+  current_snapshot_id: string | null;
   total_rows: number;
   total_data_files: number;
   warehouse_uri: string;
 }
 
 export interface SnapshotInfo {
-  snapshot_id: number;
-  parent_id: number | null;
+  snapshot_id: string;
+  parent_id: string | null;
   committed_at: string;
   operation: string;
   schema_id: number | null;
@@ -104,7 +106,7 @@ export interface IngestRequest {
 
 export interface IngestResponse {
   rows_appended: number;
-  snapshot_id: number;
+  snapshot_id: string;
   total_rows: number;
   total_data_files: number;
   source: string;
@@ -118,14 +120,14 @@ export interface EvolveResponse {
 }
 
 export interface ScanStats {
-  snapshot_id: number | null;
+  snapshot_id: string | null;
   total_data_files: number;
   files_scanned: number;
   rows_read: number;
 }
 
 export interface QueryRequest {
-  snapshot_id?: number | null;
+  snapshot_id?: string | null;
   as_of_timestamp?: string | null;
   row_filter?: string | null;
   sql?: string | null;
@@ -140,7 +142,7 @@ export interface QueryResult {
 }
 
 export interface ExportRequest {
-  snapshot_id?: number | null;
+  snapshot_id?: string | null;
   as_of_timestamp?: string | null;
   row_filter?: string | null;
   columns?: string[] | null;
@@ -151,12 +153,12 @@ export interface ExportResponse {
   rows_exported: number;
   size_bytes: number;
   size_human: string;
-  snapshot_id: number | null;
+  snapshot_id: string | null;
   url: string | null;
 }
 
 export interface SnapshotGrowthPoint {
-  snapshot_id: number;
+  snapshot_id: string;
   committed_at: string;
   total_rows: number;
 }
@@ -179,6 +181,6 @@ export interface ActivityEntry {
   ts: string;
   op: string;
   detail: string;
-  snapshot_id: number | null;
+  snapshot_id: string | null;
   rows: number | null;
 }

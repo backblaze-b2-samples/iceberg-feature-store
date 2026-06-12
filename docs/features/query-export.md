@@ -36,6 +36,7 @@ Run a time-travel query against the feature table — PyIceberg prunes files and
 - Export: scan with optional column projection → Parquet bytes → `put_object` to `exports/slice_<ts>.parquet`
 
 ## Edge Cases
+- `snapshot_id` is a 64-bit id carried as a string end-to-end (the Select value, not a parsed number) so JS float64 rounding can't corrupt the chosen snapshot — see [Snapshots & Time Travel](snapshots-time-travel.md#outputs)
 - Both `snapshot_id` and `as_of_timestamp` set → 400
 - Scan failure (bad filter, B2 error) → 502; invalid SQL → 400 with the DuckDB message
 - Export producing 0 rows → 400 (nothing to write)

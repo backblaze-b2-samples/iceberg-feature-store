@@ -36,7 +36,7 @@ export function SnapshotsTable() {
   const { data: snapshots = [], isLoading, error, refetch } = useSnapshots();
   const rollback = useRollback();
 
-  const onRollback = async (snapshotId: number) => {
+  const onRollback = async (snapshotId: string) => {
     try {
       const res = await rollback.mutateAsync(snapshotId);
       toast.success(`Rolled back to snapshot ${snapshotId} · ${res.total_rows} rows`);

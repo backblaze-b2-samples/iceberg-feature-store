@@ -31,7 +31,7 @@ const CURRENT = "current";
 const AS_OF = "as-of";
 
 interface Scope {
-  snapshot_id: number | null;
+  snapshot_id: string | null;
   as_of_timestamp: string | null;
   row_filter: string | null;
 }
@@ -59,7 +59,9 @@ export function QueryPanel() {
       }
       return { snapshot_id: null, as_of_timestamp: new Date(asOf).toISOString(), row_filter };
     }
-    const snapshot_id = mode === CURRENT ? null : Number.parseInt(mode, 10);
+    // `mode` is already the full-precision snapshot id string (the Select value);
+    // never Number.parse it — float64 would round 64-bit ids and break the scan.
+    const snapshot_id = mode === CURRENT ? null : mode;
     return { snapshot_id, as_of_timestamp: null, row_filter };
   };
 

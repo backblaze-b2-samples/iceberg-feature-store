@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from app.types.fields import SnapshotId
+
 
 class IngestRequest(BaseModel):
     """Request to append a synthetic batch of feature rows."""
@@ -12,7 +14,7 @@ class IngestResponse(BaseModel):
     """Result of an append commit."""
 
     rows_appended: int
-    snapshot_id: int
+    snapshot_id: SnapshotId
     total_rows: int
     total_data_files: int
     source: str  # "synthetic" | "raw:<key>"

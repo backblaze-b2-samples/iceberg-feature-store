@@ -104,7 +104,7 @@ export async function getWarehouseFiles(limit = 1000) {
   return apiFetch<FileMetadata[]>(`/tables/warehouse-files?limit=${limit}`);
 }
 
-export async function rollbackSnapshot(snapshotId: number) {
+export async function rollbackSnapshot(snapshotId: string) {
   return apiFetch<TableInfo>(`/tables/rollback?snapshot_id=${snapshotId}`, {
     method: "POST",
   });

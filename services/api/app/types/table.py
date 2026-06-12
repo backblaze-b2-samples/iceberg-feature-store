@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from app.types.fields import SnapshotId
+
 
 class ColumnInfo(BaseModel):
     """One column in the current Iceberg table schema."""
@@ -26,7 +28,7 @@ class TableInfo(BaseModel):
     current_schema_id: int
     columns: list[ColumnInfo]
     snapshot_count: int
-    current_snapshot_id: int | None
+    current_snapshot_id: SnapshotId | None
     total_rows: int
     total_data_files: int
     warehouse_uri: str

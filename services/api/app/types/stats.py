@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from app.types.fields import SnapshotId
+
 
 class DailyUploadCount(BaseModel):
     date: str
@@ -17,7 +19,7 @@ class UploadStats(BaseModel):
 class SnapshotGrowthPoint(BaseModel):
     """One point on the 'rows over snapshots' growth chart."""
 
-    snapshot_id: int
+    snapshot_id: SnapshotId
     committed_at: str
     total_rows: int
 
@@ -45,5 +47,5 @@ class ActivityEntry(BaseModel):
     ts: str
     op: str
     detail: str
-    snapshot_id: int | None
+    snapshot_id: SnapshotId | None
     rows: int | None

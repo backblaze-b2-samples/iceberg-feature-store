@@ -2,11 +2,13 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from app.types.fields import SnapshotId
+
 
 class ScanStats(BaseModel):
     """How much work the time-travel scan did (Iceberg file pruning + DuckDB)."""
 
-    snapshot_id: int | None
+    snapshot_id: SnapshotId | None
     total_data_files: int  # files in the resolved snapshot
     files_scanned: int  # files PyIceberg actually read (after pruning)
     rows_read: int  # rows materialized into Arrow before SQL
@@ -16,7 +18,7 @@ class QueryRequest(BaseModel):
     """Time-travel query against the feature table, executed in DuckDB."""
 
     # Resolution mode (mutually exclusive; current if none set):
-    snapshot_id: int | None = None
+    snapshot_id: SnapshotId | None = None
     as_of_timestamp: str | None = None  # ISO 8601; resolves to latest <= ts
     # Optional Iceberg row filter expression (e.g. "label = 1").
     row_filter: str | None = None
@@ -38,7 +40,7 @@ class QueryResult(BaseModel):
 class ExportRequest(BaseModel):
     """Export a training slice as a new Parquet object on B2 (the Derive step)."""
 
-    snapshot_id: int | None = None
+    snapshot_id: SnapshotId | None = None
     as_of_timestamp: str | None = None
     row_filter: str | None = None
     columns: list[str] | None = None  # None -> all columns
@@ -51,5 +53,5 @@ class ExportResponse(BaseModel):
     rows_exported: int
     size_bytes: int
     size_human: str
-    snapshot_id: int | None
+    snapshot_id: SnapshotId | None
     url: str | None
